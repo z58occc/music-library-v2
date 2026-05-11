@@ -10,7 +10,7 @@ function DashBoard() {
   const [item, setItem] = useState({});
   const modalRef = useRef(null);
   const modalInstance = useRef(null);
-  const url = import.meta.env.VITE_SUPABASE_URL;
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/albums`;
 
   useEffect(() => {
     modalInstance.current = new Modal(modalRef.current);

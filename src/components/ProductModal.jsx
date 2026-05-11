@@ -6,14 +6,7 @@ import { createWorker } from "tesseract.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Tooltip } from "react-tooltip";
 
-function ProductModal({
-  modalRef,
-  handleCloseModal,
-  mode,
-  item,
-  fetchPost,
-  url,
-}) {
+function ProductModal({ modalRef, handleCloseModal, mode, item, fetchPost }) {
   const {
     register,
     handleSubmit,
@@ -26,10 +19,11 @@ function ProductModal({
   const [imageFile, setImageFile] = useState(null);
   const [imgSrc, setImgSrc] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [type, setType] = useState([]);
+  const url = import.meta.env.VITE_SUPABASE_URL;
 
   async function onSubmit(data) {
     data = { ...data, date: moment().format("YYYY-MM-DD") };
-    console.log(data);
     if (mode === "edit") {
       await axios
         .patch(`${url}?id=eq.${item.id}`, data)
@@ -40,15 +34,28 @@ function ProductModal({
           console.log(err);
         });
     } else {
-      await axios
-        .post(url, data)
-        .then((res) => {
+      console.log(data.singer);
+      try {
+        await axios.post(
+          `${url}/singers`,
+          { name: data.singer },
+          {
+            params: { on_conflict: "name" },
+            headers: {
+              Prefer: "return=representation,resolution=ignore-duplicates",
+            },
+          },
+        );
+        console.log("我有送出歌手");
+        const { singer, ...rest } = data;
+
+        await axios.post(url, rest).then((res) => {
           console.log(res);
           reset();
-        })
-        .catch((err) => {
-          console.log(err);
         });
+      } catch (err) {
+        console.log(err.response);
+      }
     }
     handleCloseModal();
     fetchPost();
@@ -61,11 +68,10 @@ function ProductModal({
       setImgSrc(img);
       const worker = await createWorker("jpn");
       const ret = await worker.recognize(img);
-      console.log(ret.data.text);
       setRecoedText(ret.data.text);
       await worker.terminate();
     } catch (err) {
-      console.log(err);
+      alert("不知道哪裡出了錯誤,請換張圖片試試看");
     }
   }
   useEffect(() => {
@@ -90,6 +96,18 @@ function ProductModal({
       console.log(err);
     }
   }
+
+  useEffect(() => {
+    async function fetchType() {
+      try {
+        const res = await axios.get(`${url}/formats`);
+        setType(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    fetchType();
+  }, []);
 
   return (
     <div ref={modalRef} className="modal" tabIndex="-1">
@@ -135,6 +153,23 @@ function ProductModal({
                 type="number"
                 {...register("price", { required: true, min: 0 })}
               />
+              <label className="mt-3" htmlFor="type">
+                類型:
+              </label>
+              <select
+                className="form-select w-25"
+                aria-label="Default select example"
+                {...register("type", { required: true, valueAsNumber: true })}
+              >
+                <option value="">唱片類型</option>
+                {type?.map((el) => {
+                  return (
+                    <option value={el.id} key={el.id}>
+                      {el.name}
+                    </option>
+                  );
+                })}
+              </select>
               <label className="mt-5" htmlFor="img">
                 日文圖片辨識（輸入圖片網址或上傳圖片）
               </label>
@@ -182,6 +217,15 @@ function ProductModal({
               ) : (
                 ""
               )}
+              <label className="mt-3" htmlFor="note">
+                備註:
+              </label>
+              <textarea
+                id="note"
+                className="form-control "
+                type="number"
+                {...register("note")}
+              />
 
               <div className="d-flex mt-3 justify-content-end">
                 <button
