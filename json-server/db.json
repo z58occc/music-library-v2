@@ -1,0 +1,79 @@
+{
+  "posts": [
+    {
+      "id": "1",
+      "title": "a title",
+      "views": 100
+    },
+    {
+      "id": "2",
+      "title": "another title",
+      "views": 200
+    }
+  ],
+  "comments": [
+    {
+      "id": "1",
+      "text": "a comment about post 1",
+      "postId": "1"
+    },
+    {
+      "id": "2",
+      "text": "another comment about post 1",
+      "postId": "1"
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  },
+  "albums": [
+    {
+      "name": "應該對了",
+      "singer": "吧",
+      "price": "588",
+      "id": "dr_Sf8s0o0U"
+    },
+    {
+      "name": "test",
+      "singer": "test",
+      "price": "1",
+      "id": "TNmEluXtRMc"
+    },
+    {
+      "name": "test",
+      "singer": "test",
+      "price": "1",
+      "date": "2026-05-04",
+      "id": "hruWHT14OZI"
+    },
+    {
+      "name": "test",
+      "singer": "test",
+      "price": "1",
+      "date": "2026-05-04T15:03:39.737Z",
+      "id": "nWRmmKsMu_w"
+    },
+    {
+      "name": "1",
+      "singer": "test",
+      "price": "300",
+      "date": "26-05-04",
+      "id": "nxVZMmDkp4c"
+    },
+    {
+      "name": "1",
+      "singer": "test",
+      "price": "300",
+      "date": "2026-05-04",
+      "id": "93evF1SiqsI"
+    },
+    {
+      "name": "1",
+      "singer": "test",
+      "price": "3",
+      "date": "2026-05-04",
+      "id": "qTyCJY3PIYE"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
