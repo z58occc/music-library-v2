@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import moment from "moment/moment";
 import { createWorker } from "tesseract.js";
@@ -22,11 +22,33 @@ function ProductModal({ modalRef, handleCloseModal, mode, item, fetchPost }) {
   const [type, setType] = useState([]);
   const url = import.meta.env.VITE_SUPABASE_URL;
 
+  async function upsertSinger(data) {
+    const singerRes = await axios.post(
+      `${url}/singers`,
+      { name: data.singer },
+      {
+        params: { on_conflict: "name" },
+        headers: {
+          Prefer: "return=representation,resolution=merge-duplicates",
+        },
+      },
+    );
+    return singerRes;
+  }
+
   async function onSubmit(data) {
-    data = { ...data, date: moment().format("YYYY-MM-DD") };
+    data = { ...data, released_at: moment().format("YYYY-MM-DD") };
     if (mode === "edit") {
+      const singerRes = await upsertSinger(data);
+      console.log(singerRes);
+      const id = singerRes.data[0].id;
+      const { singer, ...rest } = data;
+      rest.singer_id = id;
+      console.log(rest);
       await axios
-        .patch(`${url}?id=eq.${item.id}`, data)
+        .patch(`${url}/albums`, rest, {
+          params: { id: `eq.${item.id}` }, // 移到這裡
+        })
         .then((res) => {
           console.log(res);
         })
@@ -36,20 +58,13 @@ function ProductModal({ modalRef, handleCloseModal, mode, item, fetchPost }) {
     } else {
       console.log(data.singer);
       try {
-        await axios.post(
-          `${url}/singers`,
-          { name: data.singer },
-          {
-            params: { on_conflict: "name" },
-            headers: {
-              Prefer: "return=representation,resolution=ignore-duplicates",
-            },
-          },
-        );
-        console.log("我有送出歌手");
+        const singerRes = await upsertSinger(data);
+        console.log(singerRes);
+        const id = singerRes.data[0].id;
         const { singer, ...rest } = data;
-
-        await axios.post(url, rest).then((res) => {
+        rest.singer_id = id;
+        console.log(rest, id);
+        await axios.post(`${url}/albums`, rest).then((res) => {
           console.log(res);
           reset();
         });
@@ -76,8 +91,9 @@ function ProductModal({ modalRef, handleCloseModal, mode, item, fetchPost }) {
   }
   useEffect(() => {
     setValue("name", item.name);
-    setValue("singer", item.singer);
+    setValue("singer", item.singers?.name);
     setValue("price", item.price);
+    setValue("format_id", item.format_id);
   }, [mode, item]);
 
   useEffect(() => {
@@ -159,7 +175,10 @@ function ProductModal({ modalRef, handleCloseModal, mode, item, fetchPost }) {
               <select
                 className="form-select w-25"
                 aria-label="Default select example"
-                {...register("type", { required: true, valueAsNumber: true })}
+                {...register("format_id", {
+                  required: true,
+                  valueAsNumber: true,
+                })}
               >
                 <option value="">唱片類型</option>
                 {type?.map((el) => {

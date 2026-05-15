@@ -3,6 +3,7 @@ import ProductModal from "../components/ProductModal";
 import { Modal } from "bootstrap";
 import axios from "../utils/axios";
 import Swal from "sweetalert2";
+import Paginations from "../components/Paginations";
 
 function DashBoard() {
   const [newData, setNewData] = useState([]);
@@ -23,7 +24,11 @@ function DashBoard() {
   }
   async function fetchPost() {
     try {
-      const res = await axios.get(url);
+      const res = await axios.get(url, {
+        params: {
+          select: "*, singers(name), formats(name)", // 直接把 singers 表的 name 帶回來
+        },
+      });
       setNewData(res.data);
     } catch (err) {
       console.log(err);
@@ -119,27 +124,41 @@ function DashBoard() {
           <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4 ">
             <h2 className="mt-5">已購買的音樂</h2>
             <div className="table-responsive small">
-              <table className="table table-striped table-sm ">
+              <table className="table table-striped table-sm table-bordered">
                 <thead>
                   <tr>
                     <th scope="col">id</th>
-                    <th scope="col">專輯名稱</th>
-                    <th scope="col">歌手/樂團</th>
-                    <th scope="col">價格</th>
-                    <th scope="col">登記日期</th>
-                    <th scope="col">編輯</th>
+                    <th scope="col" className="text-center">
+                      專輯名稱
+                    </th>
+                    <th scope="col" className="text-center">
+                      歌手/樂團
+                    </th>
+                    <th scope="col" className="text-center">
+                      類型
+                    </th>
+                    <th scope="col" className="text-center">
+                      價格
+                    </th>
+                    <th scope="col" className="text-center">
+                      登記日期
+                    </th>
+                    <th scope="col" className="text-center">
+                      編輯
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {newData?.map((el, i) => {
                     return (
                       <tr key={i}>
-                        <td>{el.id}</td>
-                        <td>{el.name}</td>
-                        <td>{el.singer}</td>
-                        <td>{el.price}</td>
-                        <td>{el.date}</td>
-                        <td className="col-2">
+                        <td className="text-truncate id_td">{el.id}</td>
+                        <td className="text-center">{el.name}</td>
+                        <td className="text-center">{el.singers?.name}</td>
+                        <td className="text-center">{el.formats?.name}</td>
+                        <td className="text-center">{el.price}</td>
+                        <td className="text-center">{el.released_at}</td>
+                        <td className="col-2 text-center">
                           <button
                             type="button"
                             className="btn btn-primary me-3"
@@ -153,7 +172,7 @@ function DashBoard() {
                           </button>
                           <button
                             type="button"
-                            className="btn btn-danger me-3"
+                            className="btn btn-danger "
                             onClick={() => handleDelete(el.id)}
                           >
                             刪除
@@ -168,16 +187,11 @@ function DashBoard() {
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>
+                    <td></td>
+                    <td className="text-center">
                       <button
                         type="button"
-                        className="btn   mt-3 me-3 invisible"
-                      >
-                        新增
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-dark  mt-3"
+                        className="btn btn-dark  "
                         onClick={() => {
                           handelOpenModal();
                           setMode("new");
@@ -194,6 +208,7 @@ function DashBoard() {
                   </tr>
                 </tbody>
               </table>
+              <Paginations itemsPerPage={4} />
             </div>
           </main>
         </div>
