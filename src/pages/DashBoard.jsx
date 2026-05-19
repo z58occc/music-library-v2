@@ -12,6 +12,7 @@ function DashBoard() {
   const modalRef = useRef(null);
   const modalInstance = useRef(null);
   const url = `${import.meta.env.VITE_SUPABASE_URL}/albums`;
+  const [currentData, setCurrentData] = useState([]);
 
   useEffect(() => {
     modalInstance.current = new Modal(modalRef.current);
@@ -149,7 +150,7 @@ function DashBoard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {newData?.map((el, i) => {
+                  {currentData?.map((el, i) => {
                     return (
                       <tr key={i}>
                         <td className="text-truncate id_td">{el.id}</td>
@@ -208,22 +209,15 @@ function DashBoard() {
                   </tr>
                 </tbody>
               </table>
-              <Paginations itemsPerPage={4} />
+              <Paginations
+                itemsPerPage={10}
+                newData={newData}
+                setCurrentData={setCurrentData}
+              />
             </div>
           </main>
         </div>
       </div>
-      {/* <script
-        src="../assets/dist/js/bootstrap.bundle.min.js"
-        className="astro-vvvwv3sm"
-      ></script>
-      <script
-        src="https://cdn.jsdelivr.net/npm/chart.js@4.3.2/dist/chart.umd.js"
-        integrity="sha384-eI7PSr3L1XLISH8JdDII5YN/njoSsxfbrkCTnJrzXt+ENP5MOVBxD+l6sEG4zoLp"
-        crossOrigin="anonymous"
-        className="astro-vvvwv3sm"
-      ></script>
-      <script src="dashboard.js" className="astro-vvvwv3sm"></script> */}
     </>
   );
 }

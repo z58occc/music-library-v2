@@ -40,11 +40,9 @@ function ProductModal({ modalRef, handleCloseModal, mode, item, fetchPost }) {
     data = { ...data, released_at: moment().format("YYYY-MM-DD") };
     if (mode === "edit") {
       const singerRes = await upsertSinger(data);
-      console.log(singerRes);
       const id = singerRes.data[0].id;
       const { singer, ...rest } = data;
       rest.singer_id = id;
-      console.log(rest);
       await axios
         .patch(`${url}/albums`, rest, {
           params: { id: `eq.${item.id}` }, // 移到這裡
@@ -56,14 +54,11 @@ function ProductModal({ modalRef, handleCloseModal, mode, item, fetchPost }) {
           console.log(err);
         });
     } else {
-      console.log(data.singer);
       try {
         const singerRes = await upsertSinger(data);
-        console.log(singerRes);
         const id = singerRes.data[0].id;
         const { singer, ...rest } = data;
         rest.singer_id = id;
-        console.log(rest, id);
         await axios.post(`${url}/albums`, rest).then((res) => {
           console.log(res);
           reset();
@@ -91,7 +86,7 @@ function ProductModal({ modalRef, handleCloseModal, mode, item, fetchPost }) {
   }
   useEffect(() => {
     setValue("name", item.name);
-    setValue("singer", item.singers?.name);
+    setValue("singer", item.singers?.name ? item.singers?.name : "");
     setValue("price", item.price);
     setValue("format_id", item.format_id);
   }, [mode, item]);
@@ -158,7 +153,7 @@ function ProductModal({ modalRef, handleCloseModal, mode, item, fetchPost }) {
                 id="singer"
                 className="form-control "
                 type="text"
-                {...register("singer")}
+                {...register("singer", { defaultValues: "" })}
               />
               <label className="mt-3" htmlFor="price">
                 價格：
