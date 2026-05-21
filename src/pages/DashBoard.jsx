@@ -4,6 +4,8 @@ import { Modal } from "bootstrap";
 import axios from "../utils/axios";
 import Swal from "sweetalert2";
 import Paginations from "../components/Paginations";
+import Doughnut from "../components/Doughnut";
+import LineChart from "../components/LineChart";
 
 function DashBoard() {
   const [newData, setNewData] = useState([]);
@@ -123,6 +125,10 @@ function DashBoard() {
       <div className="container-fluid">
         <div className="row">
           <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4 ">
+            <div className="d-flex">
+              <Doughnut newData={newData} />
+              <LineChart newData={newData} />
+            </div>
             <h2 className="mt-5">已購買的音樂</h2>
             <div className="table-responsive small">
               <table className="table table-striped table-sm table-bordered">

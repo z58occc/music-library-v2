@@ -6,7 +6,13 @@ import { createWorker } from "tesseract.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Tooltip } from "react-tooltip";
 
-function ProductModal({ modalRef, handleCloseModal, mode, item, fetchPost }) {
+function ProductModal({
+  modalRef,
+  handleCloseModal,
+  mode,
+  item,
+  fetchPost,
+}) {
   const {
     register,
     handleSubmit,

@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import _ReactPaginate from "react-paginate";
 const ReactPaginate = _ReactPaginate.default;
 
-
-function Paginations({ itemsPerPage, newData, setCurrentData }) {
+function Paginations({ itemsPerPage, newData, setCurrentData, currentPage }) {
   // Example items, to simulate fetching from another resources.
   const items = Array.from({ length: newData.length }, (_, i) => i + 1);
 
@@ -19,6 +18,7 @@ function Paginations({ itemsPerPage, newData, setCurrentData }) {
   useEffect(() => {
     setCurrentData(newData.slice(itemOffset, endOffset));
   }, [newData]);
+  // 初始化
 
   const pageCount = Math.ceil(items.length / itemsPerPage);
 
@@ -27,9 +27,14 @@ function Paginations({ itemsPerPage, newData, setCurrentData }) {
     const newOffset = (event.selected * itemsPerPage) % items.length;
     setItemOffset(newOffset);
   };
+
   useEffect(() => {
     setCurrentData(newData.slice(itemOffset, endOffset));
   }, [itemOffset]);
+  // 跳頁
+
+
+
   return (
     <>
       <ReactPaginate
