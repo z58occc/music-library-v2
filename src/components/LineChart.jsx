@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import ChartBase from "./ChartBase";
 
 function LineChart({ newData }) {
-  const [initData,setInitData]=useState({});
+  const arr = Array.from({ length: 12 }, (_, i) => `${i + 1}月`);
+  const [initData, setInitData] = useState({});
   useEffect(() => {
     const newArr = newData.map((el) => {
       return { ...el, released_at: new Date(el.released_at) };
@@ -10,36 +11,21 @@ function LineChart({ newData }) {
     const init = Object.fromEntries(
       Array.from({ length: 12 }, (_, i) => [i + 1, 0]),
     );
+    const monthly = newArr.reduce((acc, item) => {
+      const month = item.released_at.getMonth() + 1;
 
-   const monthly = newArr.reduce((acc, item) => {
-     const month = item.released_at.getMonth() + 1;
-
-     acc[month] += item.price;
-     return acc;
-   }, init);
-    setInitData(monthly)
+      acc[month] += item.price;
+      return acc;
+    }, init);
+    setInitData(monthly);
   }, [newData]);
 
-  const arr = Array.from({ length: 12 }, (_, i) => `${i + 1}月`);
-
   const data = {
-    // labels: arr, // 標籤
+    labels: arr,
     datasets: [
       {
-        label: "月份金額折線圖", // 圖表標題
-        data: initData, // 各區塊的數據
-        backgroundColor: [
-          // 設定每個區塊的顏色
-          "rgba(255, 99, 132, 0.2)", // 紅色
-          "rgba(54, 162, 235, 0.2)", // 藍色
-          "rgba(255, 206, 86, 0.2)", // 黃色
-        ],
-        borderColor: [
-          // 設定邊框顏色
-          "rgba(255, 99, 132, 1)", // 紅色邊框
-          "rgba(54, 162, 235, 1)", // 藍色邊框
-          "rgba(255, 206, 86, 1)", // 黃色邊框
-        ],
+        label: "月份-總金額折線圖", // 圖表標題
+        data: Object.values(initData), // 各區塊的數據
         borderWidth: 1, // 邊框寬度
       },
     ],
@@ -67,6 +53,7 @@ function LineChart({ newData }) {
             currency: "TWD",
             minimumFractionDigits: 0,
           }).format(value);
+
           if (value === 0) return "";
           return `${cost}`;
         },

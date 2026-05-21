@@ -28,15 +28,12 @@ function Doughnut({ newData }) {
         data: [lpCost, cdCost, tapeCost], // 各區塊的數據
         backgroundColor: [
           // 設定每個區塊的顏色
-          "rgba(255, 99, 132, 0.2)", // 紅色
-          "rgba(54, 162, 235, 0.2)", // 藍色
-          "rgba(255, 206, 86, 0.2)", // 黃色
+          "#534AB7", // 紅色
+          "#0F6E56", // 黃色
+          "#993C1D",
         ],
         borderColor: [
-          // 設定邊框顏色
-          "rgba(255, 99, 132, 1)", // 紅色邊框
-          "rgba(54, 162, 235, 1)", // 藍色邊框
-          "rgba(255, 206, 86, 1)", // 黃色邊框
+          "black"
         ],
         borderWidth: 1, // 邊框寬度
       },

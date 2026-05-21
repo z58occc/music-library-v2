@@ -6,6 +6,8 @@ import Swal from "sweetalert2";
 import Paginations from "../components/Paginations";
 import Doughnut from "../components/Doughnut";
 import LineChart from "../components/LineChart";
+import { Tooltip } from "react-tooltip";
+import Hint from "../components/Hint";
 
 function DashBoard() {
   const [newData, setNewData] = useState([]);
@@ -151,6 +153,9 @@ function DashBoard() {
                       登記日期
                     </th>
                     <th scope="col" className="text-center">
+                      備註
+                    </th>
+                    <th scope="col" className="text-center">
                       編輯
                     </th>
                   </tr>
@@ -159,12 +164,15 @@ function DashBoard() {
                   {currentData?.map((el, i) => {
                     return (
                       <tr key={i}>
-                        <td className="text-truncate id_td">{el.id}</td>
+                        <td className="text-truncate td-id">{el.id}</td>
                         <td className="text-center">{el.name}</td>
                         <td className="text-center">{el.singers?.name}</td>
                         <td className="text-center">{el.formats?.name}</td>
                         <td className="text-center">{el.price}</td>
                         <td className="text-center">{el.released_at}</td>
+                        <td className="text-center text-truncate td-note">
+                          <Hint note={el.note}/>
+                        </td>
                         <td className="col-2 text-center">
                           <button
                             type="button"
@@ -189,6 +197,7 @@ function DashBoard() {
                     );
                   })}
                   <tr className="border-white table-light">
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>

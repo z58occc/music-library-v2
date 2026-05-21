@@ -1,9 +1,16 @@
+
+
 .bi {
   display: inline-block;
   width: 1rem;
   height: 1rem;
 }
-.id_td {
+.td-note{
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow:ellipsis ;
+}
+.td-id {
   max-width: 50px;
   overflow: hidden;
   text-overflow:ellipsis ;
