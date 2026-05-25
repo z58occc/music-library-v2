@@ -24,7 +24,7 @@ function Doughnut({ newData }) {
     labels: ["黑膠", "唱片", "卡帶"], // 標籤
     datasets: [
       {
-        label: "My Pie Chart", // 圖表標題
+        label: "累計消費(新台幣)", // 圖表標題
         data: [lpCost, cdCost, tapeCost], // 各區塊的數據
         backgroundColor: [
           // 設定每個區塊的顏色
@@ -32,9 +32,7 @@ function Doughnut({ newData }) {
           "#0F6E56", // 黃色
           "#993C1D",
         ],
-        borderColor: [
-          "black"
-        ],
+        borderColor: ["black"],
         borderWidth: 1, // 邊框寬度
       },
     ],
@@ -57,6 +55,13 @@ function Doughnut({ newData }) {
           weight: "bold",
         },
         formatter: (value, ctx) => {
+          const total = ctx.chart.data.datasets[0].data.reduce(
+            (a, b) => a + b,
+            0,
+          );
+          const percentage = value / total;
+          if (value === 0 || percentage < 0.05) return "";
+
           const label = ctx.chart.data.labels[ctx.dataIndex];
           const cost = new Intl.NumberFormat("zh-TW", {
             style: "currency",
@@ -70,9 +75,8 @@ function Doughnut({ newData }) {
     },
   };
 
-
   return (
-    <div className="w-50">
+    <div className="w-75">
       <ChartBase type="doughnut" data={data} options={options} />
     </div>
   );

@@ -1,12 +1,11 @@
-import DashBoard from "./pages/DashBoard";
-import 'bootstrap-icons/font/bootstrap-icons.json'
-
+import { RouterProvider } from "react-router";
+import {router} from "./router";
+import "bootstrap-icons/font/bootstrap-icons.json";
 
 function App() {
-  
   return (
     <>
-      <DashBoard />
+      <RouterProvider router={router} />
     </>
   );
 }

@@ -62,7 +62,7 @@ function LineChart({ newData }) {
   };
 
   return (
-    <div className="w-50">
+    <div className="w-75">
       <ChartBase type="line" data={data} options={options} />
     </div>
   );
