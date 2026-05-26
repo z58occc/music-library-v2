@@ -162,6 +162,7 @@ function DashBoard() {
                         singer: "",
                         price: "",
                         singers: [{ name: "" }],
+                        note: "",
                       });
                     }}
                   >
