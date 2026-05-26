@@ -7,8 +7,8 @@ function ChartPage() {
   const [newData, setNewData] = useState([]);
   const url = `${import.meta.env.VITE_SUPABASE_URL}/albums`;
   const chartOptions = [
-    { value: "donut", label: "甜甜圈" },
-    { value: "line", label: "折線圖" },
+    { value: "donut", label: "類型-金額" },
+    { value: "line", label: "月份-金額" },
   ];
   const [chartType, setChartType] = useState("donut");
 

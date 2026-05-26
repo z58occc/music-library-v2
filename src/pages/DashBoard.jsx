@@ -3,10 +3,7 @@ import ProductModal from "../components/ProductModal";
 import { Modal } from "bootstrap";
 import axios from "../utils/axios";
 import Swal from "sweetalert2";
-import { Link } from "react-router";
 import Paginations from "../components/Paginations";
-import Doughnut from "../components/Doughnut";
-import LineChart from "../components/LineChart";
 import Hint from "../components/Hint";
 
 function DashBoard() {
@@ -15,7 +12,7 @@ function DashBoard() {
   const [item, setItem] = useState({});
   const modalRef = useRef(null);
   const modalInstance = useRef(null);
-  const url = `${import.meta.env.VITE_SUPABASE_URL}/albums`;
+  const url = import.meta.env.VITE_SUPABASE_URL;
   const [currentData, setCurrentData] = useState([]);
 
   useEffect(() => {
@@ -29,7 +26,7 @@ function DashBoard() {
   }
   async function fetchPost() {
     try {
-      const res = await axios.get(url, {
+      const res = await axios.get(`${url}/albums`, {
         params: {
           select: "*, singers(name), formats(name)", // 直接把 singers 表的 name 帶回來
         },
@@ -49,7 +46,21 @@ function DashBoard() {
       confirmButtonText: "對, 刪掉它!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await axios.delete(`${url}?id=eq.${id}`);
+        try {
+          console.log(id);
+
+          await axios.delete(`${url}/album_singers`, {
+            params: { album_id: `eq.${id}` },
+          });
+        } catch (err) {
+          console.log(err);
+        }
+        try {
+          await axios.delete(`${url}/albums?id=eq.${id}`);
+        } catch (err) {
+          console.log("沒刪掉專輯");
+        }
+
         fetchPost();
         Swal.fire({
           title: "已刪除!",
@@ -101,7 +112,11 @@ function DashBoard() {
                   <tr key={i}>
                     <td className="text-truncate td-id">{el.id}</td>
                     <td className="text-center">{el.name}</td>
-                    <td className="text-center">{el.singers?.name}</td>
+                    <td className="text-center">
+                      {el.singers?.map((el) => {
+                        return el.name;
+                      })}
+                    </td>
                     <td className="text-center">{el.formats?.name}</td>
                     <td className="text-center">{el.price}</td>
                     <td className="text-center">{el.released_at}</td>

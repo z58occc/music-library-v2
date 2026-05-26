@@ -12,6 +12,7 @@ function ProductModal({
   mode,
   item,
   fetchPost,
+  url,
 }) {
   const {
     register,
@@ -26,7 +27,6 @@ function ProductModal({
   const [imgSrc, setImgSrc] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = useState([]);
-  const url = import.meta.env.VITE_SUPABASE_URL;
 
   async function upsertSinger(data) {
     const singerRes = await axios.post(
@@ -44,35 +44,43 @@ function ProductModal({
 
   async function onSubmit(data) {
     data = { ...data, released_at: moment().format("YYYY-MM-DD") };
-    if (mode === "edit") {
+    const { singer, ...rest } = data;
+
+    try {
+      // 1. upsert 歌手
       const singerRes = await upsertSinger(data);
-      const id = singerRes.data[0].id;
-      const { singer, ...rest } = data;
-      rest.singer_id = id;
-      await axios
-        .patch(`${url}/albums`, rest, {
+      const singerId = singerRes.data[0].id;
+      if (mode === "edit") {
+        await axios.patch(`${url}/albums`, rest, {
           params: { id: `eq.${item.id}` }, // 移到這裡
-        })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
         });
-    } else {
-      try {
-        const singerRes = await upsertSinger(data);
-        const id = singerRes.data[0].id;
-        const { singer, ...rest } = data;
-        rest.singer_id = id;
-        await axios.post(`${url}/albums`, rest).then((res) => {
-          console.log(res);
-          reset();
+        // 刪除舊關聯（橋接表）
+        await axios.delete(`${url}/album_singers`, {
+          params: { album_id: `eq.${item.id}` },
         });
-      } catch (err) {
-        console.log(err.response);
+        // 新增新關聯
+        await axios.post(`${url}/album_singers`, {
+          album_id: item.id,
+          singer_id: singerId,
+        });
+      } else {
+        //新增專輯
+        const albumRes = await axios.post(`${url}/albums`, rest, {
+          headers: { Prefer: "return=representation" },
+        });
+        const albumId = albumRes.data[0].id;
+
+        await axios.post(`${url}/album_singers`, {
+          album_id: albumId,
+          singer_id: singerId,
+        });
+        reset();
       }
+    } catch (err) {
+      console.log(err.response);
+      console.log("修改或新增失敗");
     }
+
     handleCloseModal();
     fetchPost();
   }
