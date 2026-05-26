@@ -47,8 +47,6 @@ function DashBoard() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          console.log(id);
-
           await axios.delete(`${url}/album_singers`, {
             params: { album_id: `eq.${id}` },
           });
@@ -113,9 +111,7 @@ function DashBoard() {
                     <td className="text-truncate td-id">{el.id}</td>
                     <td className="text-center">{el.name}</td>
                     <td className="text-center">
-                      {el.singers?.map((el) => {
-                        return el.name;
-                      })}
+                      {el.singers?.map((s) => s.name).join(" / ")}
                     </td>
                     <td className="text-center">{el.formats?.name}</td>
                     <td className="text-center">{el.price}</td>
@@ -165,6 +161,7 @@ function DashBoard() {
                         name: "",
                         singer: "",
                         price: "",
+                        singers: [{ name: "" }],
                       });
                     }}
                   >

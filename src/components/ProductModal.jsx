@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import moment from "moment/moment";
@@ -15,12 +15,22 @@ function ProductModal({
   url,
 }) {
   const {
+    control,
     register,
     handleSubmit,
-    setValue,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      singers: [{ name: "" }], // 預設一個空欄位
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "singers",
+  });
+
   const [recoText, setRecoText] = useState("");
   const [recoedText, setRecoedText] = useState("");
   const [imageFile, setImageFile] = useState(null);
@@ -28,10 +38,10 @@ function ProductModal({
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = useState([]);
 
-  async function upsertSinger(data) {
+  async function upsertSinger(singer) {
     const singerRes = await axios.post(
       `${url}/singers`,
-      { name: data.singer },
+      { name: singer.name },
       {
         params: { on_conflict: "name" },
         headers: {
@@ -44,9 +54,17 @@ function ProductModal({
 
   async function onSubmit(data) {
     data = { ...data, released_at: moment().format("YYYY-MM-DD") };
-    const { singer, ...rest } = data;
+    const { singers, ...rest } = data;
 
     try {
+      // 1. upsert 所有歌手，拿到所有 singer_id
+      const singerIds = await Promise.all(
+        singers.map(async (singer) => {
+          const singerRes = await upsertSinger(singer);
+          return singerRes.data[0].id;
+        }),
+      );
+
       // 1. upsert 歌手
       const singerRes = await upsertSinger(data);
       const singerId = singerRes.data[0].id;
@@ -59,10 +77,10 @@ function ProductModal({
           params: { album_id: `eq.${item.id}` },
         });
         // 新增新關聯
-        await axios.post(`${url}/album_singers`, {
-          album_id: item.id,
-          singer_id: singerId,
-        });
+        await axios.post(
+          `${url}/album_singers`,
+          singerIds.map((singer_id) => ({ album_id: item.id, singer_id })),
+        );
       } else {
         //新增專輯
         const albumRes = await axios.post(`${url}/albums`, rest, {
@@ -70,10 +88,10 @@ function ProductModal({
         });
         const albumId = albumRes.data[0].id;
 
-        await axios.post(`${url}/album_singers`, {
-          album_id: albumId,
-          singer_id: singerId,
-        });
+        await axios.post(
+          `${url}/album_singers`,
+          singerIds.map((singer_id) => ({ album_id: albumId, singer_id })),
+        );
         reset();
       }
     } catch (err) {
@@ -99,10 +117,14 @@ function ProductModal({
     }
   }
   useEffect(() => {
-    setValue("name", item.name);
-    setValue("singer", item.singers?.name ? item.singers?.name : "");
-    setValue("price", item.price);
-    setValue("format_id", item.format_id);
+    reset({
+      name: item.name,
+      price: item.price,
+      note: item.note,
+      format_id: item.format_id,
+      released_at: item.released_at,
+      singers: item.singers?.map((s) => ({ name: s.name })),
+    });
   }, [mode, item]);
 
   useEffect(() => {
@@ -113,7 +135,6 @@ function ProductModal({
     try {
       await navigator.clipboard.writeText(recoedText);
       setIsOpen(true);
-      console.log("成功");
       setTimeout(() => {
         setIsOpen(false);
       }, 2000);
@@ -160,7 +181,7 @@ function ProductModal({
                 type="text"
                 {...register("name", { required: true })}
               />
-              <label className="mt-3" htmlFor="singer">
+              {/* <label className="mt-3" htmlFor="singer">
                 歌手或樂團：
               </label>
               <input
@@ -168,7 +189,38 @@ function ProductModal({
                 className="form-control "
                 type="text"
                 {...register("singer", { defaultValues: "" })}
-              />
+              /> */}
+
+              <label className="mt-3">歌手或樂團：</label>
+
+              {fields.map((field, index) => (
+                <div key={field.id} className="d-flex mt-1">
+                  <input
+                    className="form-control "
+                    {...register(`singers.${index}.name`)}
+                    placeholder="歌手名稱"
+                  />
+                  {fields.length > 1 && (
+                    <button
+                      className="btn btn-danger btn-sm m-1"
+                      type="button"
+                      onClick={() => remove(index)}
+                    >
+                      －
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className="btn btn-success btn-sm mt-3"
+                onClick={() => append({ name: "" })}
+              >
+                ＋ 新增歌手
+              </button>
+              <br />
+
               <label className="mt-3" htmlFor="price">
                 價格：
               </label>
