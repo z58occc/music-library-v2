@@ -53,7 +53,7 @@ function ProductModal({
   }
 
   async function onSubmit(data) {
-    data = { ...data, released_at: moment().format("YYYY-MM-DD") };
+    data = { ...data, updated_at: moment().format("YYYY-MM-DD") };
     const { singers, ...rest } = data;
 
     try {
@@ -69,6 +69,7 @@ function ProductModal({
       const singerRes = await upsertSinger(data);
       const singerId = singerRes.data[0].id;
       if (mode === "edit") {
+        console.log(rest);
         await axios.patch(`${url}/albums`, rest, {
           params: { id: `eq.${item.id}` }, // 移到這裡
         });
@@ -122,7 +123,7 @@ function ProductModal({
       price: item.price,
       note: item.note,
       format_id: item.format_id,
-      released_at: item.released_at,
+      updated_at: item.updated_at,
       singers: item.singers?.map((s) => ({ name: s.name })),
     });
   }, [mode, item]);
@@ -181,15 +182,6 @@ function ProductModal({
                 type="text"
                 {...register("name", { required: true })}
               />
-              {/* <label className="mt-3" htmlFor="singer">
-                歌手或樂團：
-              </label>
-              <input
-                id="singer"
-                className="form-control "
-                type="text"
-                {...register("singer", { defaultValues: "" })}
-              /> */}
 
               <label className="mt-3">歌手或樂團：</label>
 

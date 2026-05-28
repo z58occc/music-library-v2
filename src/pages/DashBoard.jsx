@@ -1,25 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import ProductModal from "../components/ProductModal";
+import ImgModal from "../components/ImgModal";
 import { Modal } from "bootstrap";
 import axios from "../utils/axios";
 import Swal from "sweetalert2";
 import Paginations from "../components/Paginations";
 import Hint from "../components/Hint";
+import moment from "moment";
 
 function DashBoard() {
   const [newData, setNewData] = useState([]);
   const [mode, setMode] = useState("");
   const [item, setItem] = useState({});
   const modalRef = useRef(null);
+  const imgModalRef = useRef(null);
   const modalInstance = useRef(null);
+  const imgModalInstance = useRef(null);
   const url = import.meta.env.VITE_SUPABASE_URL;
   const [currentData, setCurrentData] = useState([]);
 
   useEffect(() => {
     modalInstance.current = new Modal(modalRef.current);
+    imgModalInstance.current = new Modal(imgModalRef.current);
   }, []);
   function handelOpenModal() {
     modalInstance.current.show();
+  }
+  function handelOpenImgModal() {
+    imgModalInstance.current.show();
   }
   function handleCloseModal() {
     modalInstance.current.hide();
@@ -29,8 +37,10 @@ function DashBoard() {
       const res = await axios.get(`${url}/albums`, {
         params: {
           select: "*, singers(name), formats(name)", // 直接把 singers 表的 name 帶回來
+          order: "created_at.desc", // 加這行 (排序 新到舊)
         },
       });
+      console.log(res.data)
       setNewData(res.data);
     } catch (err) {
       console.log(err);
@@ -80,7 +90,7 @@ function DashBoard() {
           <table className="table table-striped table-sm table-bordered">
             <thead>
               <tr>
-                <th scope="col">id</th>
+                <th scope="col">縮圖</th>
                 <th scope="col" className="text-center">
                   專輯名稱
                 </th>
@@ -108,14 +118,20 @@ function DashBoard() {
               {currentData?.map((el, i) => {
                 return (
                   <tr key={i}>
-                    <td className="text-truncate td-id">{el.id}</td>
+                    <td >
+                      <img className="album-cover object-fit-cover" src={el.cover_url} alt="目前暫無縮圖"
+                      onClick={handelOpenImgModal}
+                      />
+                    </td>
                     <td className="text-center">{el.name}</td>
                     <td className="text-center">
                       {el.singers?.map((s) => s.name).join(" / ")}
                     </td>
                     <td className="text-center">{el.formats?.name}</td>
                     <td className="text-center">{el.price}</td>
-                    <td className="text-center">{el.released_at}</td>
+                    <td className="text-center">
+                      {moment(el.created_at).format("YYYY-MM-DD")}
+                    </td>
                     <td className="text-center text-truncate td-note">
                       <Hint note={el.note} />
                     </td>
@@ -187,6 +203,10 @@ function DashBoard() {
         fetchPost={fetchPost}
         url={url}
       />
+      <ImgModal
+      imgModalRef={imgModalRef}
+      />
+
     </>
   );
 }
