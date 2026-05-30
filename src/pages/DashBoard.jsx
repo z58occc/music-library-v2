@@ -18,6 +18,7 @@ function DashBoard() {
   const imgModalInstance = useRef(null);
   const url = import.meta.env.VITE_SUPABASE_URL;
   const [currentData, setCurrentData] = useState([]);
+  const [src, setSrc] = useState(null);
 
   useEffect(() => {
     modalInstance.current = new Modal(modalRef.current);
@@ -40,7 +41,6 @@ function DashBoard() {
           order: "created_at.desc", // 加這行 (排序 新到舊)
         },
       });
-      console.log(res.data)
       setNewData(res.data);
     } catch (err) {
       console.log(err);
@@ -118,9 +118,15 @@ function DashBoard() {
               {currentData?.map((el, i) => {
                 return (
                   <tr key={i}>
-                    <td >
-                      <img className="album-cover object-fit-cover" src={el.cover_url} alt="目前暫無縮圖"
-                      onClick={handelOpenImgModal}
+                    <td>
+                      <img
+                        className="album-cover object-fit-cover"
+                        src={el.cover_url}
+                        alt="目前暫無縮圖"
+                        onClick={() => {
+                          handelOpenImgModal();
+                          setSrc(el.cover_url);
+                        }}
                       />
                     </td>
                     <td className="text-center">{el.name}</td>
@@ -203,10 +209,7 @@ function DashBoard() {
         fetchPost={fetchPost}
         url={url}
       />
-      <ImgModal
-      imgModalRef={imgModalRef}
-      />
-
+      <ImgModal imgModalRef={imgModalRef} src={src} />
     </>
   );
 }

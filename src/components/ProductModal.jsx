@@ -4,7 +4,6 @@ import axios from "../utils/axios";
 import moment from "moment/moment";
 import { createWorker } from "tesseract.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Tooltip } from "react-tooltip";
 
 function ProductModal({
   modalRef,
@@ -31,11 +30,6 @@ function ProductModal({
     name: "singers",
   });
 
-  const [recoText, setRecoText] = useState("");
-  const [recoedText, setRecoedText] = useState("");
-  const [imageFile, setImageFile] = useState(null);
-  const [imgSrc, setImgSrc] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = useState([]);
 
   async function upsertSinger(singer) {
@@ -69,7 +63,6 @@ function ProductModal({
       const singerRes = await upsertSinger(data);
       const singerId = singerRes.data[0].id;
       if (mode === "edit") {
-        console.log(rest);
         await axios.patch(`${url}/albums`, rest, {
           params: { id: `eq.${item.id}` }, // 移到這裡
         });
@@ -96,8 +89,8 @@ function ProductModal({
         reset();
       }
     } catch (err) {
+      alert("修改或新增失敗");
       console.log(err.response);
-      console.log("修改或新增失敗");
     }
 
     handleCloseModal();
@@ -108,7 +101,6 @@ function ProductModal({
     try {
       if (!img) return;
       if (typeof img !== "string") img = URL.createObjectURL(img);
-      setImgSrc(img);
       const worker = await createWorker("jpn");
       const ret = await worker.recognize(img);
       setRecoedText(ret.data.text);
@@ -127,22 +119,6 @@ function ProductModal({
       singers: item.singers?.map((s) => ({ name: s.name })),
     });
   }, [mode, item]);
-
-  useEffect(() => {
-    recognizeText(imageFile);
-  }, [imageFile]);
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(recoedText);
-      setIsOpen(true);
-      setTimeout(() => {
-        setIsOpen(false);
-      }, 2000);
-    } catch (err) {
-      console.log(err);
-    }
-  }
 
   useEffect(() => {
     async function fetchType() {
@@ -222,6 +198,15 @@ function ProductModal({
                 type="number"
                 {...register("price", { required: true, min: 0 })}
               />
+              <label className="mt-3" htmlFor="cover_url">
+                封面url：
+              </label>
+              <input
+                id="cover_url"
+                className="form-control "
+                type="text"
+                {...register("cover_url")}
+              />
               <label className="mt-3" htmlFor="type">
                 類型:
               </label>
@@ -242,53 +227,7 @@ function ProductModal({
                   );
                 })}
               </select>
-              <label className="mt-5" htmlFor="img">
-                日文圖片辨識（輸入圖片網址或上傳圖片）
-              </label>
-              <div className="d-flex align-items-center">
-                <input
-                  id="img"
-                  className="form-control "
-                  type="text"
-                  accept="image"
-                  onChange={(e) => setRecoText(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="btn btn-info btn-sm text-nowrap ms-3"
-                  onClick={() => recognizeText(recoText)}
-                >
-                  辨識
-                </button>
-              </div>
-              <input
-                id="img"
-                className="form-control mt-3"
-                type="file"
-                accept="image"
-                onChange={(e) => setImageFile(e.target.files[0])}
-              />
-              {imgSrc ? (
-                <>
-                  <img
-                    src={imgSrc}
-                    className="w-100 border my-3 border-dark"
-                    alt="目前沒有提供可辨識的圖片"
-                  />
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="border ">{recoedText}</p>
-                    <Tooltip id="my-tooltip" isOpen={isOpen} />
-                    <a
-                      data-tooltip-id="my-tooltip"
-                      data-tooltip-content="複製成功！"
-                    >
-                      <i className="bi bi-copy mx-3  h3" onClick={handleCopy} />
-                    </a>
-                  </div>
-                </>
-              ) : (
-                ""
-              )}
+
               <label className="mt-3" htmlFor="note">
                 備註:
               </label>

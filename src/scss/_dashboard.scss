@@ -1,24 +1,18 @@
-
-
 .bi {
   display: inline-block;
   width: 1rem;
   height: 1rem;
 }
-.td-note{
+.td-note {
   max-width: 100px;
   overflow: hidden;
-  text-overflow:ellipsis ;
+  text-overflow: ellipsis;
 }
 .td-id {
   max-width: 50px;
   overflow: hidden;
-  text-overflow:ellipsis ;
+  text-overflow: ellipsis;
 }
-
-/*
- * Sidebar
- */
 
 @media (min-width: 768px) {
   .sidebar .offcanvas-lg {
@@ -31,16 +25,18 @@
   }
 }
 
-.sidebar .nav-link {
-  font-size: 0.875rem;
-  font-weight: 500;
+.sidebar {
+  min-height: 100vh;
+  .nav-link {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .nav-link.active {
+    color: blue;
+  }
 }
 
-.sidebar .nav-link.active {
-  color:blue;
-}
-
-.sidebar-heading {
+.sidebar .sidebar-heading {
   font-size: 0.75rem;
 }
 
@@ -59,7 +55,7 @@
 .navbar .form-control {
   padding: 0.75rem 1rem;
 }
-.album-cover{
+.album-cover {
   width: 50px;
   height: 50px;
 }

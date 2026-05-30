@@ -58,9 +58,8 @@ function Layout() {
         </div>
       </header>
       <div className="row w-100">
-        <div className="sidebar vh-100 border border-right col-lg-2 p-0 bg-dark-subtle  border-0">
+        <div className="sidebar  border border-right col-lg-2 p-0 bg-dark-subtle  border-0">
           <div
-            className=""
             tabIndex="-1"
             id="sidebarMenu"
             aria-labelledby="sidebarMenuLabel"

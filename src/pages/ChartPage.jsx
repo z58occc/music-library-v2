@@ -35,9 +35,9 @@ function ChartPage() {
         <div className="d-flex">
           {chartType === "donut" && <Doughnut newData={newData} />}
           {chartType === "line" && <LineChart newData={newData} />}
-          <div class="dropdown">
+          <div className="dropdown">
             <button
-              class="btn btn-secondary dropdown-toggle"
+              className="btn btn-secondary dropdown-toggle"
               type="button"
               id="dropdownMenuButton1"
               data-bs-toggle="dropdown"
@@ -46,15 +46,14 @@ function ChartPage() {
               圖表類型
             </button>
             <ul
-              class="dropdown-menu cursor-pointer"
+              className="dropdown-menu cursor-pointer"
               aria-labelledby="dropdownMenuButton1"
             >
               {chartOptions.map((el, i) => {
                 return (
                   <li key={i}>
                     <span
-                      class="dropdown-item"
-                      href="#"
+                      className="dropdown-item"
                       onClick={() => setChartType(el.value)}
                     >
                       {el.label}
