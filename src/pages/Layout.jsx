@@ -1,7 +1,18 @@
 import { Outlet } from "react-router";
 import { NavLink } from "react-router";
+import LogInModal from "../components/LogInModal";
+import { useRef, useEffect } from "react";
+import { Modal } from "bootstrap";
 
 function Layout() {
+  const logInModalRef = useRef(null);
+  const modalInstance = useRef(null);
+  useEffect(() => {
+    modalInstance.current = new Modal(logInModalRef.current);
+  }, []);
+  function handleOpenModal() {
+    modalInstance.current.show();
+  }
   return (
     <>
       <header
@@ -16,46 +27,13 @@ function Layout() {
         >
           實體音樂管理（後台）
         </NavLink>
-        <ul className="navbar-nav flex-row d-md-none">
-          <li className="nav-item text-nowrap">
-            <button
-              className="nav-link px-3 text-white"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarSearch"
-              aria-controls="navbarSearch"
-              aria-expanded="false"
-              aria-label="Toggle search"
-            >
-              <svg className="bi" aria-hidden="true">
-                <use xlinkHref="#search"></use>
-              </svg>
-            </button>
-          </li>
-          <li className="nav-item text-nowrap">
-            <button
-              className="nav-link px-3 text-white"
-              type="button"
-              data-bs-toggle="offcanvas"
-              data-bs-target="#sidebarMenu"
-              aria-controls="sidebarMenu"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <svg className="bi" aria-hidden="true">
-                <use xlinkHref="#list"></use>
-              </svg>
-            </button>
-          </li>
-        </ul>
-        <div id="navbarSearch" className="navbar-search w-100 collapse">
-          <input
-            className="form-control w-100 rounded-0 border-0"
-            type="text"
-            placeholder="Search"
-            aria-label="Search"
-          />
-        </div>
+        <button
+          type="button"
+          className="btn btn-secondary me-3"
+          onClick={handleOpenModal}
+        >
+          登入
+        </button>
       </header>
       <div className="row w-100">
         <div className="sidebar  border border-right col-lg-2 p-0 bg-dark-subtle  border-0">
@@ -88,6 +66,7 @@ function Layout() {
         </div>
         <Outlet />
       </div>
+      <LogInModal logInModalRef={logInModalRef} />
     </>
   );
 }

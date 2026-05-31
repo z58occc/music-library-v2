@@ -97,18 +97,7 @@ function ProductModal({
     fetchPost();
   }
 
-  async function recognizeText(img) {
-    try {
-      if (!img) return;
-      if (typeof img !== "string") img = URL.createObjectURL(img);
-      const worker = await createWorker("jpn");
-      const ret = await worker.recognize(img);
-      setRecoedText(ret.data.text);
-      await worker.terminate();
-    } catch (err) {
-      alert("不知道哪裡出了錯誤,請換張圖片試試看");
-    }
-  }
+  
   useEffect(() => {
     reset({
       name: item.name,
