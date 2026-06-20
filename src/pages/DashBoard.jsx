@@ -16,9 +16,10 @@ function DashBoard() {
   const imgModalRef = useRef(null);
   const modalInstance = useRef(null);
   const imgModalInstance = useRef(null);
-  const url = import.meta.env.VITE_SUPABASE_URL;
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1`;
   const [currentData, setCurrentData] = useState([]);
   const [src, setSrc] = useState(null);
+
 
   useEffect(() => {
     modalInstance.current = new Modal(modalRef.current);
@@ -121,7 +122,7 @@ function DashBoard() {
                     <td>
                       <img
                         className="album-cover object-fit-cover"
-                        src={el.cover_url}
+                        src={el.cover_url || null}
                         alt="目前暫無縮圖"
                         onClick={() => {
                           handelOpenImgModal();

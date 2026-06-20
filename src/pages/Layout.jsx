@@ -1,12 +1,14 @@
 import { Outlet } from "react-router";
 import { NavLink } from "react-router";
 import LogInModal from "../components/LogInModal";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Modal } from "bootstrap";
 
 function Layout() {
   const logInModalRef = useRef(null);
   const modalInstance = useRef(null);
+  const [token, setToken] = useState("");
+
   useEffect(() => {
     modalInstance.current = new Modal(logInModalRef.current);
   }, []);
@@ -66,7 +68,7 @@ function Layout() {
         </div>
         <Outlet />
       </div>
-      <LogInModal logInModalRef={logInModalRef} />
+      <LogInModal logInModalRef={logInModalRef} setToken={setToken} />
     </>
   );
 }

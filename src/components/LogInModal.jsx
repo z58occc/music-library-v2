@@ -1,20 +1,31 @@
 import { useForm } from "react-hook-form";
-import { createClient } from "@supabase/supabase-js/dist/index.cjs";
+import { supabase } from "../utils/supabase";
+import { useState } from "react";
 
-function LogInModal({ logInModalRef }) {
+function LogInModal({ logInModalRef, setToken }) {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm();
-  const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-  // Create a single supabase client for interacting with your database
-  // const supabase = createClient( SUPABASE_KEY);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  async function onSubmit(data) {
-    console.log(data);
+  async function onSubmit(formData) {
+    const { email, password } = formData;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.log(error);
+      setErrorMsg(error.message);
+      return;
+    }
+    console.log("登入成功", data);
+    setToken(data.session.access_token);
   }
 
   return (

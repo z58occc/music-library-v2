@@ -2,7 +2,6 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { useEffect, useState } from "react";
 import axios from "../utils/axios";
 import moment from "moment/moment";
-import { createWorker } from "tesseract.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 function ProductModal({

@@ -5,7 +5,7 @@ import axios from "../utils/axios";
 
 function ChartPage() {
   const [newData, setNewData] = useState([]);
-  const url = `${import.meta.env.VITE_SUPABASE_URL}/albums`;
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/albums`;
   const chartOptions = [
     { value: "donut", label: "類型-金額" },
     { value: "line", label: "月份-金額" },

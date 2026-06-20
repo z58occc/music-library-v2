@@ -12,7 +12,6 @@ function LineChart({ newData }) {
       Array.from({ length: 12 }, (_, i) => [i + 1, 0]),
     );
     const monthly = newArr.reduce((acc, item) => {
-      console.log(item);
       const month = new Date(item.created_at).getMonth() + 1;
 
       acc[month] += item.price;
